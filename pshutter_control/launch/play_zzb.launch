@@ -1,0 +1,44 @@
+<launch>
+
+
+    <!-- bring up the robot -->
+    <include file="$(find shutter_bringup)/launch/shutter.launch">
+        <!-- <arg name="simulation" value="false"/> -->
+    </include>
+
+
+    <!-- Starts text to speech -->
+    <node name="tacotron" pkg="tacotron2_ros" type="tacotron2_node.py" launch-prefix="$(rospack find tacotron2_ros)/../.venv/bin/python"respawn="true"/>
+    
+
+
+    <!--Rosservice to move -->
+    <node pkg="rosservice" type="rosservice" name="/controller_manager/switch_controller" args="call "start_controllers: ['joint_group_controller'] stop_controllers:  [''] strictness: 0 start_asap: false timeout: 0.0"" />
+
+
+    <!-- wait -->
+    <arg name="node_start_delay" default="1.0" />  
+    <node name="listener" pkg="roscpp_tutorials" type="listener" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " />
+
+    <!-- look forward -->
+        <node name="look_forward" pkg="pshutter_control" type="shutter_awaken.py"/>
+    <!--  -->
+
+     <!-- Calls Kinect -->
+    <node name="kinect" pkg="azure_kinect_ros_driver" type="zip_zap_boing.py" respawn="true" args = "depth_mode:=WFOV_2X2BINNED"/>
+    <!-- -->
+
+       <!-- bring up the robot -->
+    <include file="azure_kinect_ros_driver/launch/driver.launch">
+        <arg name="depth_mode" value="WFOV_2X2BINNED"/>
+        <arg name="body_tracking_enabled" value="true"/>
+    </include>
+
+    <!-- Calls Zip Zap node -->
+    <node name="zip_zap_boing" pkg="pshutter_control" type="zip_zap_boing.py" respawn="true"/>
+    <!-- -->
+
+
+
+
+</launch>    roslaunch   driver.launch body_tracking_enabled:=true
