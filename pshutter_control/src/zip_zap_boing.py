@@ -54,7 +54,8 @@ class ZipZapBoing():
     def __init__(self, N, gameplay="automatic", error=0, errorpass=0):
 
         self.publisher = rospy.Publisher("/tacotron2/tts", String, queue_size=10)
-        self.subscriber = rospy.Subscriber("/zzb_move", String, recieve_player_move ,queue_size=1)
+        self.move_subscriber = rospy.Subscriber("/zzb_move", String, recieve_player_move ,queue_size=1)
+        # self.assign_subscriber = rospy.Subscriber("/assign_positions", )
         rospy.init_node("zip_zap_boing", anonymous=False)
         self.rate = rospy.Rate(60)
         #These class variables store the following information:
@@ -73,6 +74,7 @@ class ZipZapBoing():
         self.gameplay = gameplay
         self.d = {"Zip": 0, "Zap": 1, "Boing": 2}
         self.dd = {0: "Zip", 1: "Zap", 2: "Boing"}
+        self.player_mappings = {0: 0}
         self.error = error
         self.errorpass = errorpass
 
@@ -222,8 +224,6 @@ class ZipZapBoing():
                 if speech: self.publisher.publish(msg)
 
             elif move:
-
-                print(move)
                 
                 pointer = None
                 if move == "Zip":
@@ -237,14 +237,10 @@ class ZipZapBoing():
 
                 next_move = Action(pointer, self.d[move])
 
-                print(next_move)
-
-                if move in self.contexts:
+                if next_move in self.contexts[self.state]:
                     error_flag = False
                 else:
-                    return
-
-                print("Creating Move")
+                    error_flag = True
 
             else: #if it is not the robot's turn make a random legal move choice
                 #we want to make an erroneous move some proportion of time specified by the user 
@@ -515,8 +511,6 @@ def recieve_player_move(msg):
     g_game.make_move(speech=False, move=msg.data)
     if g_game.state.cp == 0:
         g_game.make_move(speech=True)
-
-    time.sleep(3)
 
 if __name__ == "__main__":
     # run the main function

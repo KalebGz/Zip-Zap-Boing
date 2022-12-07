@@ -16,7 +16,7 @@ class PoseInterpreter:
         rospy.init_node('pose_interpreter', anonymous=False)
 
         self.pub = rospy.Publisher('/zzb_move', String, queue_size=1)
-        self.rate = rospy.Rate(0.5)
+        self.rate = rospy.Rate(0.25)
 
         self.sub = rospy.Subscriber('/body_tracking_data', MarkerArray, self.recieve_pose, queue_size=1)
 
@@ -25,8 +25,6 @@ class PoseInterpreter:
     def publish(self):
 
         while not rospy.is_shutdown():
-
-            print(self.answer)
 
             if self.answer and self.answer != "none":
                 print(f"publishing! {self.answer}")
@@ -44,9 +42,9 @@ class PoseInterpreter:
         if not len(msg.markers): return
 
         # Retrieve only one person
-        rs, rw, pv = markers[12], markers[14], markers[0]
+        rs, ls, rw, lw, pv = markers[12], markers[5], markers[14], markers[7], markers[0]
 
-        if rs.type != rw.type != pv.type: 
+        if rs.type != rw.type != pv.type != ls.type != lw.type: 
             print("Diff people")
             return
 
@@ -54,29 +52,42 @@ class PoseInterpreter:
         #print(rw)
         #print(pv)
 
-        # Horizontal Vector
-        hvx, hvy = rs.pose.position.x - pv.pose.position.x, rs.pose.position.y - pv.pose.position.y
-
+        # Horizontal Vectors
+        rhvx, rhvy = rs.pose.position.x - pv.pose.position.x, rs.pose.position.y - pv.pose.position.y
         # Arm Vector
-        avx, avy = rs.pose.position.x - rw.pose.position.x, rs.pose.position.y - rw.pose.position.y
+        ravx, ravy = rs.pose.position.x - rw.pose.position.x, rs.pose.position.y - rw.pose.position.y
 
-        mag_a = math.sqrt(avx ** 2 + avy ** 2)
-        mag_h = math.sqrt(hvx ** 2 + hvy ** 2)
+        # Horizontal Vectors
+        lhvx, lhvy = ls.pose.position.x - pv.pose.position.x, ls.pose.position.y - pv.pose.position.y
+        # Arm Vector
+        lavx, lavy = ls.pose.position.x - lw.pose.position.x, ls.pose.position.y - lw.pose.position.y
 
-        angle = np.arccos(np.dot((avx, avy), (hvx, hvy)) / (mag_a * mag_h))
-        print(angle)
+        rmag_a = math.sqrt(ravx ** 2 + ravy ** 2)
+        rmag_h = math.sqrt(rhvx ** 2 + rhvy ** 2)
 
-        if 0.6 < angle <= 1.4:
+        lmag_a = math.sqrt(lavx ** 2 + lavy ** 2)
+        lmag_h = math.sqrt(lhvx ** 2 + lhvy ** 2)
+
+        rangle = np.arccos(np.dot((ravx, ravy), (rhvx, rhvy)) / (rmag_a * rmag_h))
+        langle = np.arccos(np.dot((lavx, lavy), (lhvx, lhvy)) / (lmag_a * lmag_h))
+
+        print(f"Right arm angle: {rangle}")
+        print(f"Left  arm angle: {langle}")
+
+        answer = "none"
+
+        if langle >= 1:
             answer = "Zip"
-        elif 1.4 < angle <= 2:
+
+        if rangle >= 1:
             answer = "Zap"
-        elif 2 < angle <= 3.14:
+
+        if langle >= 1 and rangle >= 1.2:
             answer = "Boing"
-        else:
-            answer = "none"
 
         self.answer = answer
-        print(answer)
+
+        print(f"Output: {answer}\n")
 
 
 if __name__ == "__main__":
