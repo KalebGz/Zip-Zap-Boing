@@ -53,7 +53,8 @@ class State():
 class ZipZapBoing():
     def __init__(self, N, gameplay="automatic", error=0, errorpass=0):
 
-        self.publisher = rospy.Publisher("/tacotron2/tts", String, queue_size=10)
+        self.speech_publisher = rospy.Publisher("/tacotron2/tts", String, queue_size=10)
+        self.move_publisher = rospy.Publisher("/zzb_move_robot", String, queue_size=1)
         self.move_subscriber = rospy.Subscriber("/zzb_move", String, recieve_player_move ,queue_size=1)
         # self.assign_subscriber = rospy.Subscriber("/assign_positions", )
         rospy.init_node("zip_zap_boing", anonymous=False)
@@ -181,7 +182,7 @@ class ZipZapBoing():
         #reset previous sender and previous move to none and attempt to make another move 
         self.state = State(self.state.cp, self.state.cp, 3)
 
-    def make_move(self, speech=False, move=None):
+    def make_move(self, speech=False, move=None, pid=None):
 
         if self.gameplay == "user":
             next_move = self.request_user_move()
@@ -215,15 +216,25 @@ class ZipZapBoing():
 
                 # TODO output action
                 msg = String()
+                action = String()
 
                 if not error_flag:
-                  msg = "My choice is " + self.dd[next_move.action] + "."
+                    action = self.dd[next_move.action]
+                    msg = "My choice is " + action + "."
                 else:
-                  msg = "Error!"
+                    msg = "Error!"
 
-                if speech: self.publisher.publish(msg)
+                if speech: self.speech_publisher.publish(msg)
+                if msg != "Error!" and pid == 0: self.move_publisher.publish(action)
 
             elif move:
+
+                print(f"PID: {pid} CP: {self.state.cp}")
+                pid = int(pid)
+
+                if pid != self.state.cp:
+                    print("It's not your turn!!")
+                    return
                 
                 pointer = None
                 if move == "Zip":
@@ -437,7 +448,7 @@ def play():
     human player moves first or second.
     """
 
-    N = 6
+    N = 3
     n = 2000
     gameplay = 'participant'
     error = 0.0
@@ -507,10 +518,11 @@ def recieve_player_move(msg):
     if g_game is None: return
 
     print(f"Move: {msg.data}")
+    move, pid = msg.data.split(" ")
 
-    g_game.make_move(speech=False, move=msg.data)
+    g_game.make_move(speech=False, move=move, pid=pid)
     if g_game.state.cp == 0:
-        g_game.make_move(speech=True)
+        g_game.make_move(speech=True, pid=0)
 
 if __name__ == "__main__":
     # run the main function
