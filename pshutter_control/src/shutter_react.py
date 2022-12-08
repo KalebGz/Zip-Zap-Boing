@@ -14,7 +14,7 @@ class MoveReaction:
         sub = rospy.Subscriber('/zzb_move_robot', String, self.update_pose, queue_size=1)
         self.pub = rospy.Publisher('/joint_group_controller/command', Float64MultiArray, queue_size=1)
 
-        rospy.init_node('move_react', anonymous=True)
+        rospy.init_node('shutter_react', anonymous=True)
         self.timer = rospy.Rate(1)
 
         rospy.spin()
