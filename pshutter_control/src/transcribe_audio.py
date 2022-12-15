@@ -11,6 +11,7 @@ from google.oauth2 import service_account
 from std_msgs.msg import String
 from visualization_msgs.msg import MarkerArray
 
+# NOTE: API disabled, enable on google cloud console at https://console.cloud.google.com/apis/library/speech.googleapis.com?project=bim-project-371012
 
 from microphone_stream import MicrophoneStream          
 
