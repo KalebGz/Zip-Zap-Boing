@@ -13,7 +13,7 @@ class PoseInterpreter:
 
         self.players = {}
 
-        rospy.init_node('pose_interpreter', anonymous=False)
+        rospy.init_node('interpret_pose', anonymous=False)
 
         self.move_pub = rospy.Publisher('/zzb_move', String, queue_size=1)
         self.rate = rospy.Rate(0.25)
@@ -32,6 +32,7 @@ class PoseInterpreter:
         player_id = msg.markers[0].id // 100
 
         if player_id not in self.players:
+            # Reassign idle pids
             self.players[player_id] = len(self.players.keys()) + 1
             print(f"Added new player {player_id} -> {self.players[player_id]}")
 

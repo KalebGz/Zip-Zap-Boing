@@ -1,0 +1,18 @@
+<launch>
+
+    <!-- bring up the robot and kinect-->
+    <include file="$(find pshutter_control)/launch/demo.launch"></include>   
+    <!--include file="$(find azure_kinect_ros_driver)/launch/demo.launch">
+        <arg name="depth_mode" value="WFOV_2X2BINNED"/>
+        <arg name="body_tracking_enabled" value="true"/>
+    </include-->  
+
+    <!--Rosservice to move -->
+    <node name="start_controllers" pkg="pshutter_control" type="start_controllers.py"/>
+
+    <!-- Shutter React and Interpret -->
+    <node name="shutter_react" pkg="pshutter_control" type="shutter_react.py"/>
+    <node name="interpret_pose" pkg="pshutter_control" type="interpret_pose.py"/>
+    <!--  -->
+
+</launch> 
