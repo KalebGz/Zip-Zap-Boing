@@ -19,9 +19,9 @@ Zip Zap Boing is a very simple game where players gather in a circle and pass a 
 
 Zip Zap Boing is played by _passing_ a __turn__ around a circle. On a player's __turn__, they have a select set of actions that they may choose from.
 - If a player wants to pass the turn to the player to their left, they point left and say Zip.
-- If they want to choose the player on their right, the point right and say Zap.
+- If they want to choose the player on their right, point right and say Zap.
 - If they want to choose the person that just pointed at them, they say Boing without pointing. (__Note__: This means a player cannot follow a Zip with a Zap, and vice versa.)
-- If a player recieves a Boing, they may not choose Boing to redirect the turn. 
+- If a player receives a Boing, they may not choose Boing to redirect the turn. 
 - Each time another player is selected in this way, it is their turn to quickly Zip, Zap, or Boing.
 - If a player hesitates, doesn’t respond when it is their turn, their word doesn’t match where they are pointing, or they take an improper action, then the game ends and resets.
 
@@ -50,7 +50,7 @@ Shutter must also output its decision, so that other players may follow along an
 
 3. ### Gesture Recognition
 
-    The gesture recognition node (`interpret_pose.py`) takes in kinect data, and then calculates the angle between one's arms and torso. If the angle in either arm is greater than around 90 degrees, the action is labelled as a _Zip_ or _Zap_. If they are both greater than 90, then the action is a _Boing_.
+    The gesture recognition node (`interpret_pose.py`) takes in kinect data, and then calculates the angle between one's arms and torso. If the angle in either arm is greater than around 90 degrees, the action is labeled as a _Zip_ or _Zap_. If they are both greater than 90, then the action is a _Boing_.
 
 ## Operation
 
