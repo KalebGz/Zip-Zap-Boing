@@ -6,8 +6,7 @@
 2. [Requirements](#requirements)
 3. [System](#system)
     1. [Game Environment](#game-environment)
-    2. [Wakeup](#game-node)
-    3. [Movement](#movement-node)
+    2. [Wakeup & Movement](#wakeup-&-movement)
     4. [Gesture Recognition](#gesture-recognition)
 4. [Operation](#operation)
 
@@ -43,4 +42,22 @@ Shutter must also output its decision, so that other players may follow along an
 
 1. ### Game Environment
 
-    To understand the rules of the game, Shutter calls the `zip_zap_boing.py` script, which trains Shutter how to play the game with an array of players where each player is assigned an index. After a set amount of epochs to train on, the players are replaced input from the kinect.  
+    To understand the rules of the game, Shutter calls the `zip_zap_boing.py` script, which trains Shutter how to play the game with an array of players where each player is assigned an index. After a set amount of epochs to train on, the simulation players are replaced by input from the kinect.  
+
+2. ### Wakeup & Movement
+
+    On wakeup, or start, Shutter moves to an initial position so that it may face players in the frame. This script is called in the `shutter_awaken.py` script. Then, once the game has started, the `shutter_react.py` script will send Shutter to 3 potential locations depending on its predicted move.
+
+3. ### Gesture Recognition
+
+    The gesture recognition node (`interpret_pose.py`) takes in kinect data, and then calculates the angle between one's arms and torso. If the angle in either arm is greater than around 90 degrees, the action is labelled as a _Zip_ or _Zap_. If they are both greater than 90, then the action is a _Boing_.
+
+## Operation
+
+To start a game of Zip Zap Boing, call:
+
+```
+cd ~/catkin_ws
+source devel/setup.bash
+roslaunch pshutter_control play_game.launch
+```
