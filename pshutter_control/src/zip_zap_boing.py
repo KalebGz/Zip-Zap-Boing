@@ -229,11 +229,11 @@ class ZipZapBoing():
 
             elif move:
 
-                print(f"PID: {pid} CP: {self.state.cp}")
+                # print(f"PID: {pid} CP: {self.state.cp}")
                 pid = int(pid)
 
                 if pid != self.state.cp:
-                    print("It's not your turn!!")
+                    # print("It's not your turn!!")
                     return
                 
                 pointer = None
