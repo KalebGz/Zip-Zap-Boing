@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 import rospy
 from std_msgs.msg import String
 
-#Define a class for each 'move' in the game 
+# Define a class for each 'move' in the game 
 class Action():
     def __init__(self, pointer, action):
         #pointer tells us which player the move is directed at 
@@ -31,7 +31,7 @@ class Action():
         #we want to define 'equality' (==) for the Move class
         return self.pointer == other.pointer and self.action == other.action
 
-#define a class for a state 'state' in the game
+# Define a class for a state 'state' in the game
 class State():
     def __init__(self, prev_player, curr_player, prev_action):
         self.pp = prev_player
@@ -49,25 +49,29 @@ class State():
         return hash((self.pp, self.cp, self.pa))
 
 
-
+# Core game functionality
 class ZipZapBoing():
     def __init__(self, N, gameplay="automatic", error=0, errorpass=0):
 
         self.speech_publisher = rospy.Publisher("/tacotron2/tts", String, queue_size=10)
         self.move_publisher = rospy.Publisher("/zzb_move_robot", String, queue_size=1)
         self.move_subscriber = rospy.Subscriber("/zzb_move", String, recieve_player_move ,queue_size=1)
-        # self.assign_subscriber = rospy.Subscriber("/assign_positions", )
+
         rospy.init_node("zip_zap_boing", anonymous=False)
         self.rate = rospy.Rate(60)
-        #These class variables store the following information:
-        #i) The number of players in the game
-        #ii) The current player in the game, this is initialised at a random index
-        #i) The previous move made
-        #iv) The person who made the previous move
-        #v) A ledger that holds all of the moves made during the game 
-        #vi) arguments as inputed by the user
-        #vii) A dicrionary that maps moves to discrete values 
-        #iix) This variable dictates the proportion of the time that our players make an incorrect move
+
+        '''
+        These class variables store the following information:
+        i) The number of players in the game
+        ii) The current player in the game, this is initialised at a random index
+        iii) The previous move made
+        iv) The person who made the previous move
+        v) A ledger that holds all of the moves made during the game 
+        vi) arguments as inputed by the user
+        vii) A dicrionary that maps moves to discrete values 
+        iix) This variable dictates the proportion of the time that our players make an incorrect move
+        '''
+
         self.N = N
         self.first_player = random.randint(0, N-1)
         self.state = State(self.first_player, self.first_player, 3)
@@ -446,6 +450,9 @@ def play():
     Play human game against the AI.
     `human_player` can be set to 0 or 1 to specify whether
     human player moves first or second.
+
+    Currently the game is hard set a certain amount player
+    count and game configuration
     """
 
     N = 3
