@@ -21,12 +21,12 @@ class MoveReaction:
 
     def update_pose(self, msg):
 
-        print(msg)
+        # print(msg)
         
         joint_cmd = Float64MultiArray()
         joint_cmd.data = self.cmd_mappings[msg.data]
 
-        print(joint_cmd)
+        # print(joint_cmd)
 
         self.pub.publish(joint_cmd)
         self.timer.sleep()
