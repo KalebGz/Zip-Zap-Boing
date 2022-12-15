@@ -12,13 +12,12 @@ class WakeupRobot:
 
         rospy.init_node('awaken', anonymous=True)
         timer = rospy.Rate(1)
-            # pub = rospy.Publisher('/unity_joint_group_controller/command', Float64MultiArray)
+        # pub = rospy.Publisher('/unity_joint_group_controller/command', Float64MultiArray)
 
         # Publish repeatedly
         i = 0;
         while not rospy.is_shutdown() and i < 20:
             joint_cmd = Float64MultiArray()
-            # joint_cmd.data = [0, 0, 0, 0]
             joint_cmd.data = [0, -0.5, -0.2, -0.1]
             pub.publish(joint_cmd)
             timer.sleep()
