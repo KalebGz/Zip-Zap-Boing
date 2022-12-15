@@ -9,9 +9,10 @@ from google.oauth2 import service_account
 import pyaudio
 from six.moves import queue
 
+
 # Audio recording parameters
 RATE = 16000
-CHUNK = int(RATE / 10)  # 100ms
+CHUNK = int(RATE / 100)  # 100ms
 
 
 class MicrophoneStream(object):
@@ -110,7 +111,7 @@ def listen_print_loop(responses):
             continue
 
         # Display the transcription of the top alternative.
-        transcript = result.alternatives[0].transcript
+        transcript = result.alternatives[0].transcript.lower()
 
         # Display interim results, but with a carriage return at the end of the
         # line, so subsequent lines will overwrite them.
@@ -127,7 +128,15 @@ def listen_print_loop(responses):
 
         else:
             print(transcript + overwrite_chars)
-            print("Transript: " + transcript  + "-----Overwrite Chars" + overwrite_chars)
+            # print("Transript: " + transcript  + "-----Overwrite Chars" + overwrite_chars)
+            if ("zip" in transcript or "is" in transcript or "set" in transcript or "ip" in transcript):
+                print("Guess: zip")
+            elif ( "ap" in transcript or "op" in transcript or "at" in transcript):
+                print("Guess: zap")
+            elif( "b" in transcript or  "ing" in transcript):
+                print("Guess: boing")
+            else:
+                print("TERM NOT RECORGNIZED")
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
             if re.search(r"\b(exit|quit)\b", transcript, re.I):
@@ -135,6 +144,15 @@ def listen_print_loop(responses):
                 break
 
             num_chars_printed = 0
+
+def transcribe_with_model_adaptation(
+    project_id, location, storage_uri, custom_class_id, phrase_set_id):
+
+    """
+    Create`PhraseSet` and `CustomClasses` to create custom lists of similar
+    items that are likely to occur in your input data.
+    """
+
 
 
 def main():
@@ -148,11 +166,55 @@ def main():
     credentials = service_account.Credentials.from_service_account_file("/Users/kaleb/Downloads/bim-project-371012-6b1b552052a5.json")
     client = speech.SpeechClient(credentials=credentials)
 
+                    # Speech adaptation configuration
+    #     # Create the adaptation client
+    # adaptation_client = speech.AdaptationClient()
+
+    # # The parent resource where the custom class and phrase set will be created.
+    # parent = f"projects/{project_id}/locations/{location}"
+
+    # # Create the custom class resource
+    # adaptation_client.create_custom_class(
+    #     {
+    #         "parent": parent,
+    #         "custom_class_id": custom_class_id,
+    #         "custom_class": {
+    #             "items": [
+    #                 {"value": "sushido"},
+    #                 {"value": "altura"},
+    #                 {"value": "taneda"},
+    #             ]
+    #         },
+    #     }
+    # )
+    # custom_class_name = (
+    #     f"projects/{project_id}/locations/{location}/customClasses/{custom_class_id}"
+    # )
+    # # Create the phrase set resource
+    # phrase_set_response = adaptation_client.create_phrase_set(
+    #     {
+    #         "parent": parent,
+    #         "phrase_set_id": phrase_set_id,
+    #         "phrase_set": {
+    #             "boost": 10,
+    #             "phrases": [
+    #                 {"value": f"Visit restaurants like ${{{custom_class_name}}}"}
+    #             ],
+    #         },
+    #     }
+    # )
+    # phrase_set_name = phrase_set_response.name
+    # speech_adaptation = speech.SpeechAdaptation(phrase_set_references=[phrase_set_name])
+
+
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
         sample_rate_hertz=RATE,
         language_code=language_code,
+        
     )
+        # adaptation=speech_adaptation,
+
 
     streaming_config = speech.StreamingRecognitionConfig(
         config=config, interim_results=True
@@ -172,4 +234,5 @@ def main():
 
 
 if __name__ == "__main__":
+    print("STARTING TO LISTEN")
     main()
