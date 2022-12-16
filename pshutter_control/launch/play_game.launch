@@ -7,9 +7,6 @@
         <arg name="body_tracking_enabled" value="true"/>
     </include-->  
 
-    <!--Rosservice to move -->
-    <node name="start_controllers" pkg="pshutter_control" type="start_controllers.py"/>
-
     <!-- Shutter React and Interpret -->
     <node name="shutter_react" pkg="pshutter_control" type="shutter_react.py"/>
     <node name="interpret_pose" pkg="pshutter_control" type="interpret_pose.py"/>

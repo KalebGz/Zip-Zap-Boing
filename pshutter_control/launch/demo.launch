@@ -5,12 +5,15 @@
         <arg name="simulation" value="false"/>
     </include>
 
+    <!--Rosservice to move -->
+    <node name="start_controllers" pkg="pshutter_control" type="start_controllers.py"/>
+
     <!-- Starts text to speech -->
     <node name="tacotron" pkg="tacotron2_ros" type="tacotron2_node.py" launch-prefix="$(find tacotron2_ros)/../.venv/bin/python" respawn="true"/>
     
-    <!-- Timer Delay -->
+    <!-- Timer Delay 
     <arg name="node_start_delay" default="10.0" />  
-    <node name="listener" pkg="roscpp_tutorials" type="listener" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " />
+    <node name="listener" pkg="roscpp_tutorials" type="listener" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " / -->
 
     <!-- Initial Motion state -->
     <node name="look_forward" pkg="pshutter_control" type="shutter_awaken.py"/>

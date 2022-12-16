@@ -61,3 +61,54 @@ cd ~/catkin_ws
 source devel/setup.bash
 roslaunch pshutter_control play_game.launch
 ```
+
+If one would like to run each component individually, run the following commands in separate terminals.
+
+Run roscore
+```
+roscore
+```
+
+Run the Shutter Bringup file
+```
+roslaunch shutter_bringup shutter.launch
+```
+
+Enable Motion Commands
+```
+rosservice call /controller_manager/switch_controller "start_controllers: ['joint_group_controller']
+stop_controllers: ['']
+strictness: 0
+start_asap: false
+timeout: 0.0"
+```
+
+Start a game of ZZB
+```
+rosrun pshutter_control zip_zap_boing.py
+```
+
+Kinect data pose interpreter
+```
+rosrun pshutter_control interpret_pose.py
+```
+
+Kinect
+```
+roslaunch azure_kinect_ros_driver driver.launch depth_mode:=WFOV_2X2BINNED body_tracking_enabled:=true
+```
+
+Initial Position
+```
+rosrun pshutter_control shutter_awaken.py
+```
+
+Movement Node
+```
+rosrun pshutter_control shutter_react.py
+```
+
+Text to Speech
+```
+rosrun --prefix "$(rospack find tacotron2_ros)/../.venv/bin/python" tacotron2_ros tacotron2_node.py
+```
